@@ -2,6 +2,8 @@
 
 A Flutter app built with Bloc state management consisiting of car model showcase integrated from Mercedes Test API.
 
+![image](https://github.com/roohaani786/mercedes_car_info/assets/31054672/7754bcec-66be-4841-a9bd-77e05163ecba)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
