@@ -1,6 +1,6 @@
 # mercedes_car_info
 
-A new Flutter project.
+A Flutter app built with Bloc state management consisiting of car model showcase integrated fromMercedes Test API.
 
 ## Getting Started
 
