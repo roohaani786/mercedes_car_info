@@ -1,37 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mercedes_car_info/bloc/car/car_bloc.dart';
+import 'package:mercedes_car_info/bloc/car/car_state.dart';
+
+import 'bloc/car/car_event.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+  const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  // This widget is the root of your application.
+   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return BlocProvider(
+      create: (_) => CarBloc(),
+      child: const MyHomePage(title: "hello"),
     );
   }
 }
@@ -55,18 +45,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,40 +64,58 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: BlocBuilder<CarBloc,CarState>(
+          builder: (context, state) {
+            if (state is CarStateInitial) {
+              return  Center(
+                child: SizedBox(
+                  child: InkWell(
+                    onTap: () async {
+                      context.read<CarBloc>().add(CarFetchDataEvent("Hello Cars"));
+                    },
+                    child: const Text("Get Cars Data"),
+                  ),
+                ),
+              );
+            }
+            else if (state is CarStateLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.blueGrey,
+                  ),
+                );
+            }
+            else if(state is CarStateError){
+
+            }
+            else if( state is CarStateLoaded){
+              return Center(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: state.carData.length,
+                      itemBuilder: (context,index)=>
+                          Container(
+                           padding: const EdgeInsets.all(8.0),
+                           margin: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Colors.cyan,
+                              borderRadius: BorderRadius.circular(10.0)
+                            ),
+                            child: Column(
+                              children: [
+                                Text(state.carData[index].brand?.name??"N/A"),
+                                Text(state.carData[index].priceInformation?.price.toString()??"N/A"),
+                                Text(state.carData[index].vehicleClass?.className??"N/A"),
+                                Text(state.carData[index].modelYear??"N/A"),
+                              ],
+                            ),
+                          )
+                  )
+              );
+            }
+            return const SizedBox();
+          }
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
