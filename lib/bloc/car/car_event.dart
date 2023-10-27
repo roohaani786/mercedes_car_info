@@ -5,6 +5,16 @@ import 'package:flutter/cupertino.dart';
 abstract class CarEvent {}
 
 class CarFetchDataEvent extends CarEvent {
-  final String greetingText;
-  CarFetchDataEvent(this.greetingText);
+  final String modelID;
+  CarFetchDataEvent(this.modelID);
+}
+
+class TapItemEvent extends CarEvent {
+  final String modelID;
+  TapItemEvent(this.modelID);
+}
+
+class CarFetchHomeDataEvent extends CarEvent {
+  final String marketName;
+  CarFetchHomeDataEvent(this.marketName);
 }
